@@ -6,8 +6,4 @@ require_once 'autoload.php';
 // handle all the required middleware
 Middleware::handle();
 
-$user = new User();
-$user->setEmail("bazaglo@gmail.coom");
-$user->setUsername("bazbaza");
-$user->setPassword("123456789");
-$user->save();
+echo View::get("home");

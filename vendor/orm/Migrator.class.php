@@ -13,6 +13,7 @@ class Migrator {
             );
             if(Environment::get("database_dbname") == "") Logger::log("You must specify database name in .env file");
             $conn->query("CREATE DATABASE IF NOT EXISTS ". Environment::get("database_dbname"));
+            $conn->close();
         }catch (Exception $e){
             echo $e->getMessage();
         }
