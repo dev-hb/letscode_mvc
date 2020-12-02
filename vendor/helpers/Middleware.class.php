@@ -8,7 +8,8 @@ class Middleware {
      * @var array
      */
     private static $middlewares = [
-        "check_database_existence" => "Migrator@checkDatabaseExistence"
+        "check_database_existence" => "Migrator@checkDatabaseExistence",
+        "check_route_parameter" => "Router@userProvidedRoute"
     ];
 
     /**
