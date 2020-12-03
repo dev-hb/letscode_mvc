@@ -37,4 +37,33 @@ class Reflect extends ReflectionClass {
         return count($func) ? $func : null;
     }
 
+    /**
+     * Get a property that has a default value
+     * @param $model
+     * @param $property
+     * @return string|null
+     */
+    public static function getDefaultValueOf($model, $property){
+        try{
+            $r = new ReflectionClass($model);
+            $props = $r->getDefaultProperties();
+            if(isset($props['name'])) return $props['name'];
+        }catch (ReflectionException $e){
+            Logger::log("Invalid middleware : " . $e->getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Check if a class is inherited from another
+     * @param $model
+     * @param $class
+     * @return bool
+     */
+    public static function isDescendentOf($model, $class){
+        while($parent = get_parent_class($model) !== false){
+            if($parent == $class) return true;
+        } return false;
+    }
+
 }

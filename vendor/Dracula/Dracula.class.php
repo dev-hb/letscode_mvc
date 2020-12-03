@@ -1,7 +1,7 @@
 <?php
 
 
-class Model {
+class Dracula {
 
     /**
      * @var $id
@@ -68,6 +68,20 @@ class Model {
             return $stmt->execute();
         }
         return null;
+    }
+
+
+    /**
+     * Delete specific record in MySQL
+     * @return null|bool
+     */
+    public function delete(){
+        if($this->id == null) return null;
+        $conn = ORM::getConnection();
+        $model = get_called_class() . "s";
+        $stmt = $conn->prepare("DELETE FROM ".strtolower($model) . " WHERE id=?");
+        $stmt->bind_param("i",$this->id);
+        return $stmt->execute();
     }
 
     /**

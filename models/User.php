@@ -1,7 +1,7 @@
 <?php
 
 
-class User extends Model {
+class User extends Dracula {
 
     private $username;
     private $email;

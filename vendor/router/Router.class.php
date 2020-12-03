@@ -30,7 +30,7 @@ class Router {
     public static function find($name){
         // check if route exists with name otherwise create one and return it
         foreach (static::$routes as $route) {
-            if ($route->getRoute() == $name) return $route;
+            if ($route->getRoutePath() == $name) return $route;
             if ($route->getName() == $name) return $route;
         } return Request::forward("404");
     }
@@ -42,14 +42,14 @@ class Router {
     public static function getRoute($name){
         // check if route exists with name otherwise create one and return it
         foreach (static::$routes as $route) {
-            if ($route->getRoute() == $name) return $route;
-            if(strpos($route->getRoute(), "/") === false) continue;
+            if ($route->getRoutePath() == $name) return $route;
+            if(strpos($route->getRoutePath(), "/") === false) continue;
             $nb_params = count(explode("/", $name));;
-            if(count(explode("/", $route->getRoute())) != $nb_params) continue;
-            $rt = explode("{", $route->getRoute())[0];
+            if(count(explode("/", $route->getRoutePath())) != $nb_params) continue;
+            $rt = explode("{", $route->getRoutePath())[0];
             if(strpos($name, $rt) !== false){
                 // If route with parameters found then bind all params to Route object
-                $params = explode("{", $route->getRoute());
+                $params = explode("{", $route->getRoutePath());
                 $values = explode("/", $name);
                 unset($params[0]); // delete the non parameter entry
                 // reverse params and values to start parsing from variables
@@ -61,7 +61,7 @@ class Router {
                 }
                 return $route;
             }
-        } return Request::forward("404");
+        }return Request::forward("404");
     }
 
     /**
@@ -81,5 +81,19 @@ class Router {
     public static function userProvidedRoute(){
         if(! Request::get(Constants::$ROUT_PARAM)) static::$current = Constants::$BASE_ROUTE;
         else static::$current = Request::get(Constants::$ROUT_PARAM);
+    }
+
+    /**
+     * Init default middleware and add use ones
+     * @param null $route
+     */
+    public static function bindMiddleware($route = null){
+        Middleware::init();
+        $r = $route == null ? Router::getRoute(Router::$current) : $route;
+        if($r != null){
+            foreach ($r->middlewares as $middleware){
+                Middleware::bind($middleware);
+            }
+        }
     }
 }

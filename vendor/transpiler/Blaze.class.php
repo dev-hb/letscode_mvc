@@ -83,7 +83,7 @@ class Blaze {
         while(strpos($content, "{{route(") !== false){
             $route_part = explode("{{route(", $content)[1];
             $route_name = explode(")", $route_part)[0];
-            $value = Router::find($this->cleanString($route_name))->getRoute();
+            $value = Router::find($this->cleanString($route_name))->getRoutePath();
             $content = str_replace("{{route($route_name)}}", $value, $content);
         }
         $this->setResult($content);

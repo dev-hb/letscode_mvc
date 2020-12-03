@@ -9,4 +9,5 @@ class Constants {
     public static $HOME_PAGE_ROUTE = "/letscode";
 
     public static $DEFAULT_CONTROLLER_METHOD = "index";
+    public static $MIDDLEWARES_DIR = "middlewares/";
 }

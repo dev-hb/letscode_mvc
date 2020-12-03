@@ -5,7 +5,7 @@
 
 // Declaring web routes
 
-Router::get("/letscode", "HomeController@index")->name('index');;
+Router::get("/letscode", "HomeController@index")->name('index');
 
-Router::get("product/{id}/{name}", "ProductsController@getProduct")->name('product');
-Router::get("contact");
+Router::get("product/{ref}", "ProductsController@getProduct")->name('product');
+Router::get("contact")->middleware(ContactMiddleware::class);

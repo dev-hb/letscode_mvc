@@ -35,10 +35,13 @@ class Request {
     }
 
     /**
+     * @param string $method
      * @return mixed
      */
-    public static function getData()
+    public static function getData($method = '')
     {
+        if(strtolower($method) == 'post') return $_POST;
+        else if(strtolower($method) == 'get') return $_GET;
         return self::$data;
     }
 
@@ -49,6 +52,9 @@ class Request {
      */
     public static function forward($route){
         Router::$current = $route;
+        // handle all the required middleware
+        //Router::bindMiddleware();
+        //Middleware::handle();
         return Router::get(Router::$current);
     }
 

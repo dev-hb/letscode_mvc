@@ -31,6 +31,9 @@ class View {
         if(static::$insure_onetime_call) return "";
         static::$insure_onetime_call = true;
         $v = Router::getRoute($view);
+        // handle all the required middleware
+        Router::bindMiddleware($v);
+        Middleware::handle();
         $blaze = "";
         // check if the route controller exists or not
         if($v->getCallback() == null){

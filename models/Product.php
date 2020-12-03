@@ -1,7 +1,7 @@
 <?php
 
 
-class Product extends Model {
+class Product extends Dracula {
 
     private $name;
     private $price;

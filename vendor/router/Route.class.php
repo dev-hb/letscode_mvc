@@ -8,13 +8,18 @@ class Route {
      */
     private $name;
     /**
-     * @var string $route
+     * @var string $route_path
      */
-    private $route;
+    private $route_path;
     /**
      * @var string|null $callback
      */
     private $callback;
+
+    /**
+     * @var array $middlewares
+     */
+    public $middlewares = [];
 
     /**
      * Route constructor.
@@ -24,7 +29,7 @@ class Route {
     public function __construct($route, $callback=null)
     {
         $this->callback = $callback;
-        $this->route = $route;
+        $this->route_path = $route;
     }
 
     /**
@@ -48,11 +53,21 @@ class Route {
     }
 
     /**
+     * Bind middleware to route
+     * @param $name string|Middleware
+     */
+    public function middleware($name){
+        $name = trim($name);
+        if($name != "")
+            $this->middlewares[] = $name;
+    }
+
+    /**
      * @return string|null
      */
-    public function getRoute()
+    public function getRoutePath()
     {
-        return $this->route;
+        return $this->route_path;
     }
 
     /**
