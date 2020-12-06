@@ -4,7 +4,7 @@
 class Blaze {
 
     /**
-     * @var string|null
+     * @var array|null
      */
     private $data;
     /**
@@ -26,7 +26,7 @@ class Blaze {
      * @param string|null $variables
      */
     public function __construct($view = null, $variables = null){
-        $this->data = $variables;
+        $this->variables = $variables;
         $this->view = $view;
         if($view != null){
             $this->setData(Filer::getContent($view.Constants::$VIEW_SUFFIX));
@@ -46,11 +46,24 @@ class Blaze {
         $this->handleFunction("{{env(");
         $this->handleFunction("{{get(");
         $this->handleFunction("{{route(");
+        $this->handleVariables();
         $this->handleForEach();
         $this->handleIfStatements();
 
         // return converted HTML document
         return $this;
+    }
+
+    /**
+     * Handle all variables and replace with value
+     */
+    public function handleVariables(){
+        $content = $this->getResult();
+        foreach ($this->variables as $key=>$var){
+            if(! is_array($var))
+                $content = str_replace('$'.$key, $var, $content);
+        }
+        $this->setResult($content);
     }
 
     /**

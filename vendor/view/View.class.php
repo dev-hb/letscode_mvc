@@ -17,8 +17,8 @@ class View {
      */
     public static function get($view, $vars = null){
         if(! Filer::viewExists($view) && $view) return Filer::getContent("404".Constants::$VIEW_SUFFIX);
-        $blaze = new Blaze($view);
         if($vars != null) static::$variables = array_merge(static::$variables, $vars);
+        $blaze = new Blaze($view, static::$variables);
         return $blaze->transform()->getResult();
     }
 

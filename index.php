@@ -7,4 +7,5 @@ Middleware::loadMiddlwares();
 // include user routes
 require_once 'routes.php';
 
+
 echo View::handle(Router::$current);

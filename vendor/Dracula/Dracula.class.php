@@ -66,6 +66,25 @@ class Dracula {
             $types = implode('', $types);
             $stmt->bind_param($types, ...$data);
             return $stmt->execute();
+        }else{
+            // prepare field, content and fields data type
+            $pros = $data = $types = [];
+            foreach (Reflect::getProps(get_called_class()) as $prop){
+                if($prop != "id"){
+                    $pros[] = $prop . " = ?";
+                    $getter = "get" . ucfirst($prop);
+                    $data[] = $this->$getter();
+                    $types[] = is_numeric($prop) ? "i" : "s";
+                }
+            }
+            // prepare the question marks for mysql statement
+            $pros = implode(", ", $pros);
+            // execute mysql statement
+            $stmt = $conn->prepare("UPDATE ".strtolower($model) . " SET $pros WHERE id = ?");
+            $types = implode('', $types);
+            $data = array_merge($data, [$this->getId()]);
+            $stmt->bind_param($types."i", ...$data);
+            return $stmt->execute();
         }
         return null;
     }
