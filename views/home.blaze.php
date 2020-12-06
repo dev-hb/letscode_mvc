@@ -16,3 +16,9 @@
         </div>
     </div>
 </div>
+
+<script>
+    setTimeout(() => {
+        document.getElementById('page_home').setAttribute("class", "nav-item active")
+    }, 0);
+</script>

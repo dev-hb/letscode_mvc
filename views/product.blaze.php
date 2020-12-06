@@ -12,3 +12,10 @@ Printing a variable : $name
     Adipisci dolores est mollitia officia recusandae. Iusto, nulla!
 </p>
 { @endif }
+
+
+<script>
+    setTimeout(() => {
+        document.getElementById('page_product').setAttribute("class", "nav-item active")
+    }, 0);
+</script>

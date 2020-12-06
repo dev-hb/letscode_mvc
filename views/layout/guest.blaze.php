@@ -18,13 +18,13 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
+            <li class="nav-item" id="page_home">
                 <a class="nav-link" href="?route={{ route('index') }}">Home <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="page_contact">
                 <a class="nav-link" href="?route={{ route('contact') }}">Contact Us</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="page_product">
                 <a class="nav-link" href="?route=product/5">Product 5</a>
             </li>
         </ul>

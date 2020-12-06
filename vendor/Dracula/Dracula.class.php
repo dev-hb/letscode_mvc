@@ -89,6 +89,18 @@ class Dracula {
         return null;
     }
 
+    /**
+     * Count the number of rows in a table
+     * @return int
+     */
+    public static function count(){
+        $conn = ORM::getConnection();
+        $model = get_called_class() . "s";
+        $stmt = $conn->prepare("SELECT count(*) as nb FROM ".strtolower($model));
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc()['nb'];
+    }
+
 
     /**
      * Delete specific record in MySQL

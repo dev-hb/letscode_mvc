@@ -58,12 +58,15 @@ class Blaze {
      * Handle all variables and replace with value
      */
     public function handleVariables(){
-        $content = $this->getResult();
-        foreach ($this->variables as $key=>$var){
-            if(! is_array($var))
-                $content = str_replace('$'.$key, $var, $content);
+        $vars = $this->variables;
+        if($vars && is_array($vars) && count($vars) > 0){
+            $content = $this->getResult();
+            foreach ($vars as $key=>$var){
+                if(! is_array($var))
+                    $content = str_replace('$'.$key, $var, $content);
+            }
+            $this->setResult($content);
         }
-        $this->setResult($content);
     }
 
     /**
