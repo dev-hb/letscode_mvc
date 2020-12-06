@@ -7,7 +7,4 @@ Middleware::loadMiddlwares();
 // include user routes
 require_once 'routes.php';
 
-//$m = new Math("5 == 3");
-//$m->evaluate();
-
 echo View::handle(Router::$current);

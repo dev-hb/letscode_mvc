@@ -43,9 +43,9 @@ class Blaze {
         // Regularize input data (delete useless spaces)
         $this->setResult($this->regularize());
         // Apply Blaze transformations (ps: transformers order affect the result)
-        $this->handleEnvProperties();
-        $this->handleGetParameters();
-        $this->handleRoutes();
+        $this->handleFunction("{{env(");
+        $this->handleFunction("{{get(");
+        $this->handleFunction("{{route(");
         $this->handleForEach();
         $this->handleIfStatements();
 
@@ -76,45 +76,22 @@ class Blaze {
 
     /**
      * Transform route function inside blaze views
+     * @param $keyword
      * @return mixed|string
      */
-    private function handleRoutes(){
+    private function handleFunction($keyword){
         $content = $this->getResult();
-        while(strpos($content, "{{route(") !== false){
-            $route_part = explode("{{route(", $content)[1];
+        while(strpos($content, $keyword) !== false){
+            $route_part = explode($keyword, $content)[1];
             $route_name = explode(")", $route_part)[0];
-            $value = Router::find($this->cleanString($route_name))->getRoutePath();
-            $content = str_replace("{{route($route_name)}}", $value, $content);
-        }
-        $this->setResult($content);
-    }
-
-    /**
-     * Transform get params inside blaze views
-     * @return mixed|string
-     */
-    private function handleGetParameters(){
-        $content = $this->getResult();
-        while(strpos($content, "{{get(") !== false){
-            $get_part = explode("{{get(", $content)[1];
-            $get_name = explode(")", $get_part)[0];
-            $value = Request::get($this->cleanString($get_name));
-            $content = str_replace("{{get($get_name)}}", $value, $content);
-        }
-        $this->setResult($content);
-    }
-
-    /**
-     * Transform environment properties to their actual values
-     * @return mixed|string
-     */
-    private function handleEnvProperties(){
-        $content = $this->getResult();
-        while(strpos($content, "{{env(") !== false){
-            $property_part = explode("{{env(", $content)[1];
-            $property_name = explode(")", $property_part)[0];
-            $value = Environment::get($this->cleanString($property_name));
-            $content = str_replace("{{env($property_name)}}", $value, $content);
+            if($keyword == "{{route(")
+                $value = Router::find($this->cleanString($route_name))->getRoutePath();
+            elseif($keyword == "{{get(")
+                $value = Request::get($this->cleanString($route_name));
+            elseif($keyword == "{{env(")
+                $value = Environment::get($this->cleanString($route_name));
+            else $value = "";
+            $content = str_replace($keyword."$route_name)}}", $value, $content);
         }
         $this->setResult($content);
     }
@@ -125,7 +102,18 @@ class Blaze {
      */
     private function handleIfStatements(){
         $content = $this->getResult();
-
+        while(strpos($content, "{@if") !== false){
+            $exp_part = explode("{@if", $content)[1];
+            $exp_temp = explode("}", $exp_part)[0];
+            $exp = trim($exp_temp);
+            $eval = (new Math($exp))->evaluate();
+            if($eval === null) Logger::log("You have a syntax error in @if block");
+            $data_block = explode("}", $exp_part)[1];
+            $block_content = $eval === true ? trim(explode("{@endif", $data_block)[0]) : "";
+            $data_block = "{@if$exp_temp}" . explode("{@endif}", $data_block)[0] . "}";
+            $content = str_replace($data_block, $block_content, $content);
+            break;
+        }
         $this->setResult($content);
     }
 
@@ -141,8 +129,8 @@ class Blaze {
 
     private function regularize(){
         $content = $this->getResult();
-        $content = preg_replace("/\{\{\s+/", "{{", $content);
-        $content = preg_replace("/\s+\}\}/", "}}", $content);
+        $content = preg_replace("/\{\s+/", "{", $content);
+        $content = preg_replace("/\s+\}/", "}", $content);
         return $content;
     }
 

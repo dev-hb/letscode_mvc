@@ -7,7 +7,7 @@ class Math {
      * @var string|null $expression
      */
     private $expression;
-    private $exp_tokens = ["<", ">", "==", "<=", ">=", "!", "===", "!=", "!==", "&", "|"];
+    private $exp_tokens = ["===", "!=", "!==", "==", "<=", ">=", "<", ">", "!", "&", "|"];
 
     /**
      * Math constructor.
@@ -24,15 +24,49 @@ class Math {
     public function evaluate(){
         if(! $this->validate()) return null;
         $exp = $this->getExpression();
-        if(! $this->inExpression("&&", "||")){
+        if(! $this->inExpression("&&") && ! $this->inExpression("||")){
             return $this->evaluateSubExpression($this->getExpression());
+        }elseif(strpos($exp, "&&") !== false){
+            $expressions = explode("&&", $exp);
+            $values = [];
+            foreach ($expressions as $e)
+                $values[] = $this->evaluateSubExpression($e);
+            $result = $values[0];
+            for($i=1;$i<count($values);$i++)
+                $result = $result && $values[$i];
+            return $result;
+        }else{
+            $expressions = explode("||", $exp);
+            $values = [];
+            foreach ($expressions as $e)
+                $values[] = $this->evaluateSubExpression($e);
+            $result = $values[0];
+            for($i=1;$i<count($values);$i++)
+                $result = $result || $values[$i];
+            return $result;
         }
-        return true;
+        return null;
     }
 
+    /**
+     * Evaluate subexpression
+     * @param $exp
+     * @return bool|null
+     */
     private function evaluateSubExpression($exp){
-        $token = $this->getUsedLogicalOperator($exp);
-        var_dump($token);
+        $op = $this->getUsedLogicalOperator($exp);
+        $parts = explode($op, $exp);
+        switch ($op){
+            case "==": return $parts[0] == $parts[1];
+            case ">": return $parts[0] > $parts[1];
+            case ">=": return $parts[0] >= $parts[1];
+            case "<": return $parts[0] < $parts[1];
+            case "<=": return $parts[0] <= $parts[1];
+            case "!=": return $parts[0] != $parts[1];
+            case "===": return $parts[0] === $parts[1];
+            case "!==": return $parts[0] !== $parts[1];
+            default: return null;
+        } return null;
     }
 
     private function getUsedLogicalOperator($exp){
