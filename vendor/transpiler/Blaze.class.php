@@ -46,8 +46,13 @@ class Blaze {
         $this->handleFunction("{{env(");
         $this->handleFunction("{{get(");
         $this->handleFunction("{{route(");
-        $this->handleNativeFunction("contains(");
         $this->handleVariables();
+        // native functions
+        $this->handleNativeFunction("contains(");
+        $this->handleNativeFunction("strlen(");
+        $this->handleNativeFunction("startswith(");
+        $this->handleNativeFunction("match(");
+        // statements
         $this->handleForEach();
         $this->handleIfStatements();
         // return converted HTML document
@@ -64,8 +69,8 @@ class Blaze {
             foreach ($vars as $key=>$var){
                 if(! is_array($var)) $content = str_replace('$'.$key, $var, $content);
                 else{
+                    if(strpos($content, '$'.$key) !== false) print_r($var);
                     $content = str_replace('$'.$key, "", $content);
-                    print_r($var);
                 }
             }
             $this->setResult($content);
@@ -82,9 +87,19 @@ class Blaze {
             $route_part = explode($func, $content)[1];
             $vars = explode(")", $route_part)[0];
             if($func == "contains(") {
-                $parts = explode(",", $vars);
+                $parts = explode(",", $this->cleanString($vars));
                 $value = strpos(trim($parts[0]), trim($parts[1])) !== false ? 1 : 0;
-            } else $value = 0;
+            }elseif($func == "strlen("){
+                $value = strlen(trim($vars));
+            }
+            elseif($func == "startswith("){
+                $parts = explode(",", $this->cleanString($vars));
+                $value = strpos(trim($parts[0]), trim($parts[1])) === 0 ? 1 : 0;
+            }elseif($func == "match("){
+                $parts = explode(",", $this->cleanString($vars));
+                $value = preg_match('/'.trim($parts[0]).'/', trim($parts[1])) ? 1 : 0;
+            }
+            else $value = 0;
             $content = str_replace($func."$vars)", $value, $content);
         }
         $this->setResult($content);
