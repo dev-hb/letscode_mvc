@@ -46,10 +46,10 @@ class Blaze {
         $this->handleFunction("{{env(");
         $this->handleFunction("{{get(");
         $this->handleFunction("{{route(");
+        $this->handleNativeFunction("contains(");
         $this->handleVariables();
         $this->handleForEach();
         $this->handleIfStatements();
-
         // return converted HTML document
         return $this;
     }
@@ -62,11 +62,32 @@ class Blaze {
         if($vars && is_array($vars) && count($vars) > 0){
             $content = $this->getResult();
             foreach ($vars as $key=>$var){
-                if(! is_array($var))
-                    $content = str_replace('$'.$key, $var, $content);
+                if(! is_array($var)) $content = str_replace('$'.$key, $var, $content);
+                else{
+                    $content = str_replace('$'.$key, "", $content);
+                    print_r($var);
+                }
             }
             $this->setResult($content);
         }
+    }
+
+    /**
+     * Handle string manipulating functions
+     * @param $func
+     */
+    public function handleNativeFunction($func){
+        $content = $this->getResult();
+        while(strpos($content, $func) !== false){
+            $route_part = explode($func, $content)[1];
+            $vars = explode(")", $route_part)[0];
+            if($func == "contains(") {
+                $parts = explode(",", $vars);
+                $value = strpos(trim($parts[0]), trim($parts[1])) !== false ? 1 : 0;
+            } else $value = 0;
+            $content = str_replace($func."$vars)", $value, $content);
+        }
+        $this->setResult($content);
     }
 
     /**
@@ -128,7 +149,6 @@ class Blaze {
             $block_content = $eval === true ? trim(explode("{@endif", $data_block)[0]) : "";
             $data_block = "{@if$exp_temp}" . explode("{@endif}", $data_block)[0] . "}";
             $content = str_replace($data_block, $block_content, $content);
-            break;
         }
         $this->setResult($content);
     }
@@ -139,7 +159,23 @@ class Blaze {
      */
     private function handleForEach(){
         $content = $this->getResult();
-
+        while(strpos($content, "{@for") !== false){
+            $exp_part = explode("{@for", $content)[1];
+            $exp_temp = explode("}", $exp_part)[0];
+            $source = trim(explode("as", $exp_temp)[0]);
+            $target = trim(explode("as", $exp_temp)[1]);
+            $data_block = explode("}", $exp_part)[1];
+            if(! isset($this->variables[str_replace('$', "", $source)]))
+                Logger::log("The variable $source is not defined!");
+            $data = $this->variables[str_replace('$', "", $source)];
+            $block_content_temp = trim(explode("{@end", $data_block)[0]);
+            $block_content = "";
+            foreach ($data as $item){
+                $block_content .= str_replace($target, $item, $block_content_temp);
+            }
+            $data_block = "{@for$exp_temp}" . explode("{@end}", $data_block)[0] . "}";
+            $content = str_replace($data_block, $block_content, $content);
+        }
         $this->setResult($content);
     }
 

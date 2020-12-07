@@ -18,6 +18,15 @@ class Math {
     }
 
     /**
+     * Return stripped string (delete " and ')
+     * @param $str
+     * @return string|string[]
+     */
+    public function cleanString($str){
+        return str_replace("\"", "", str_replace("'", "", str_replace(".", "/",$str)));
+    }
+
+    /**
      * Evaluate given math expression and return logical result
      * @return bool|null
      */
@@ -55,17 +64,21 @@ class Math {
      */
     private function evaluateSubExpression($exp){
         $op = $this->getUsedLogicalOperator($exp);
-        $parts = explode($op, $exp);
-        switch ($op){
-            case "==": return $parts[0] == $parts[1];
-            case ">": return $parts[0] > $parts[1];
-            case ">=": return $parts[0] >= $parts[1];
-            case "<": return $parts[0] < $parts[1];
-            case "<=": return $parts[0] <= $parts[1];
-            case "!=": return $parts[0] != $parts[1];
-            case "===": return $parts[0] === $parts[1];
-            case "!==": return $parts[0] !== $parts[1];
-            default: return null;
+        if($op != null && $op != ""){
+            $parts = explode($op, $exp);
+            switch ($op){
+                case "==": return $parts[0] == $parts[1];
+                case ">": return $parts[0] > $parts[1];
+                case ">=": return $parts[0] >= $parts[1];
+                case "<": return $parts[0] < $parts[1];
+                case "<=": return $parts[0] <= $parts[1];
+                case "!=": return $parts[0] != $parts[1];
+                case "===": return $parts[0] === $parts[1];
+                case "!==": return $parts[0] !== $parts[1];
+                default: return null;
+            }
+        }else{
+            return $exp ? true : false;
         } return null;
     }
 
@@ -94,6 +107,7 @@ class Math {
      */
     public function validate(){
         $exp = $this->getExpression();
+        if(is_numeric(trim($exp))) return true;
         $valid = false;
         foreach (array_merge($this->exp_tokens, ["&&", "||"]) as $token){
             if(strpos($exp, $token) !== false)
@@ -115,7 +129,7 @@ class Math {
     public function setExpression($expression){
         // replace all spaces with empty (normalization)
         $expression = preg_replace("/\s*/", "", $expression);
-        $this->expression = $expression;
+        $this->expression = $this->cleanString($expression);
     }
 
 }

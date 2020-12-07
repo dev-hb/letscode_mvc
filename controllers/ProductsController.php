@@ -4,8 +4,10 @@
 class ProductsController extends BaseController {
 
     public function getProduct(){
-        $name = "Zakaria HBA";
-        return View::get('product', ['name' => $name]);
+        $data = [
+            "name" => "Zakaria HBA"
+        ];
+        return View::get('product', ['data' => $data]);
     }
 
 }
