@@ -5,9 +5,12 @@ class ProductsController extends BaseController {
 
     public function getProduct(){
         $data = [
-            "name" => "Zakaria HBA"
+            "Bonjour",
+            "Hello",
+            "Khadija",
+            "Zakaria"
         ];
-        return View::get('product', ['name' => $data['name']]);
+        return View::get('product', ['names' => $data]);
     }
 
 }

@@ -69,8 +69,8 @@ class Blaze {
             foreach ($vars as $key=>$var){
                 if(! is_array($var)) $content = str_replace('$'.$key, $var, $content);
                 else{
-                    if(strpos($content, '$'.$key) !== false) print_r($var);
-                    $content = str_replace('$'.$key, "", $content);
+//                    if(strpos($content, '$'.$key) !== false) print_r($var);
+//                    $content = str_replace('$'.$key, "", $content);
                 }
             }
             $this->setResult($content);
@@ -183,7 +183,7 @@ class Blaze {
             if(! isset($this->variables[str_replace('$', "", $source)]))
                 Logger::log("The variable $source is not defined!");
             $data = $this->variables[str_replace('$', "", $source)];
-            $block_content_temp = trim(explode("{@end", $data_block)[0]);
+            $block_content_temp = trim(explode("{@end}", $data_block)[0]);
             $block_content = "";
             foreach ($data as $item){
                 $block_content .= str_replace($target, $item, $block_content_temp);
