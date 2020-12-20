@@ -7,5 +7,6 @@
 
 Router::get("/letscode", "HomeController@index")->name('index');
 
-Router::get("product/{ref}", "ProductsController@getProduct")->name('product');
-Router::get("contact")->middleware(ContactMiddleware::class);
+Router::get("products", "ProductsController@getProduct")->name('product');
+Router::get("service/customer/contact/bonjour")->name('customer_contact')
+->middleware(ContactMiddleware::class);

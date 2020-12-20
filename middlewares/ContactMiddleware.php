@@ -4,7 +4,8 @@
 class ContactMiddleware extends Exception {
 
     public function handleMiddleware(){
-        echo "Contact middleware has been called";
+        //flkj kfhje k hfkjez hfkjh
+        Request::redirect('home');
     }
 
 }

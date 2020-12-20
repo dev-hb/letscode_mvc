@@ -67,7 +67,13 @@ class Blaze {
         if($vars && is_array($vars) && count($vars) > 0){
             $content = $this->getResult();
             foreach ($vars as $key=>$var){
-                if(! is_array($var)) $content = str_replace('$'.$key, $var, $content);
+                if(! is_array($var)){
+                    if(strpos($content, '\\'.'$'.$key) === false){
+                        $content = str_replace('$'.$key, $var, $content);
+                    }else{
+                        $content = str_replace('\\'.'$'.$key, '$'.$key, $content);
+                    }
+                }
                 else{
 //                    if(strpos($content, '$'.$key) !== false) print_r($var);
 //                    $content = str_replace('$'.$key, "", $content);
